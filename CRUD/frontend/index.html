@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Explore Database</h1>
+    <h1>create Explore</h1>
+
+    Name: <input id="name"><br>
+    Country: <input id="country"><br>
+    Description: <input id="description"><br>
+
+    <button onclick="createExplorer()">Create</button>
+
+    <h2>Explore</h2>
+
+    <button onclick="loadExplorers()">refresh</button>
+    <ul id="explorerList"></ul>
+
+    <script>
+ 
+async function loadExplorers() {
+    let res = await fetch("http://127.0.0.1:8000/explorers");
+    let data = await res.json();
+ 
+    let list = document.getElementById("explorerList");
+    list.innerHTML = "";
+ 
+    data.forEach(e => {
+        let item = document.createElement("li");
+ 
+        item.innerHTML =
+            e.name + " (" + e.country + ") - " + e.description +
+            " <button onclick='deleteExplorer(\""+e.name+"\")'>Delete</button>";
+ 
+        list.appendChild(item);
+    });
+}
+ 
+ 
+async function createExplorer() {
+ 
+    let explorer = {
+        name: document.getElementById("name").value,
+        country: document.getElementById("country").value,
+        description: document.getElementById("description").value
+    };
+ 
+    await fetch("http://127.0.0.1:8000/explorers", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(explorer)
+    });
+ 
+    loadExplorers();
+}
+ 
+ 
+async function deleteExplorer(name) {
+ 
+    await fetch("http://127.0.0.1:8000/explorers/" + name, {
+        method: "DELETE"
+    });
+ 
+    loadExplorers();
+}
+ 
+loadExplorers();
+ 
+</script>
+
+
+    
+</body>
+</html>
